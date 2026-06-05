@@ -58,6 +58,7 @@ function bindEvents() {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".login-tab").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
+
       const tab = btn.dataset.loginTab;
 
       document.getElementById("loginPanel").classList.toggle("hidden", tab !== "login");
