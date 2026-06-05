@@ -137,13 +137,13 @@ function setLoggedIn(user) {
   currentUser = user;
   document.getElementById("currentUserName").textContent = user.fullName;
   document.getElementById("currentUserRole").textContent = `${user.role} | ${user.email}`;
-  document.getElementById("loginOverlay").classList.add("hidden");
+  document.getElementById("loginPage").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
   renderPage();
 }
 
 function showLogin() {
-  document.getElementById("loginOverlay").classList.remove("hidden");
+  document.getElementById("loginPage").classList.remove("hidden");
   document.getElementById("app").classList.add("hidden");
 }
 
