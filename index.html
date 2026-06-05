@@ -7,16 +7,57 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app">
+  <section id="loginPage" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo">EQA</div>
+      <h1>Blood Bank EQA Learning System 2026</h1>
+      <p class="muted center">สำหรับเจ้าหน้าที่หน่วยเวชศาสตร์บริการโลหิต</p>
+      <div class="notice-box">ใช้ได้เฉพาะอีเมล <strong>@mahidol.ac.th</strong></div>
+
+      <div class="login-tabs">
+        <button class="login-tab active" data-tab="loginPanel">เข้าสู่ระบบ</button>
+        <button class="login-tab" data-tab="registerPanel">ตั้งรหัสครั้งแรก</button>
+      </div>
+
+      <div id="loginPanel">
+        <label>อีเมล Mahidol
+          <input id="loginEmail" type="email" placeholder="name@mahidol.ac.th" />
+        </label>
+        <label>รหัสผ่าน
+          <input id="loginPassword" type="password" placeholder="รหัสผ่าน" />
+        </label>
+        <button class="primary-btn full-btn" id="loginBtn">เข้าสู่ระบบ</button>
+      </div>
+
+      <div id="registerPanel" class="hidden">
+        <label>อีเมล Mahidol
+          <input id="regEmail" type="email" placeholder="name@mahidol.ac.th" />
+        </label>
+        <label>ชื่อ-สกุล
+          <input id="regFullName" placeholder="ชื่อ-สกุล" />
+        </label>
+        <label>รหัสพนักงาน
+          <input id="regEmpCode" placeholder="เช่น 12345" />
+        </label>
+        <label>ตั้งรหัสผ่าน
+          <input id="regPassword" type="password" placeholder="อย่างน้อย 6 ตัวอักษร" />
+        </label>
+        <label>ยืนยันรหัสผ่าน
+          <input id="regPassword2" type="password" placeholder="พิมพ์รหัสผ่านอีกครั้ง" />
+        </label>
+        <button class="primary-btn full-btn" id="registerBtn">บันทึกและเข้าสู่ระบบ</button>
+      </div>
+
+      <p class="tiny-note">เวอร์ชันนี้ใช้การตั้งรหัสผ่านเอง + ตรวจโดเมน @mahidol.ac.th ก่อน ส่วนปุ่ม Google Login จริงเพิ่มต่อได้ในขั้นถัดไป</p>
+    </div>
+  </section>
+
+  <div id="app" class="hidden">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-icon">EQA</div>
-        <div>
-          <h1>BB EQA 2026</h1>
-          <p>Learning & Competency</p>
-        </div>
+        <div><h1>BB EQA 2026</h1><p>Learning & Competency</p></div>
       </div>
-
       <nav>
         <button class="nav-btn active" data-page="dashboard">Dashboard</button>
         <button class="nav-btn" data-page="cases">Cases 2026</button>
@@ -27,38 +68,15 @@
         <button class="nav-btn" data-page="reports">Reports</button>
         <button class="nav-btn" data-page="admin">Admin</button>
       </nav>
-
-      <div class="user-box">
-        <div id="currentUserName">ยังไม่ได้เข้าสู่ระบบ</div>
-        <small id="currentUserRole">-</small>
-      </div>
+      <div class="user-box"><div id="currentUserName">-</div><small id="currentUserRole">-</small></div>
     </aside>
-
     <main class="main">
       <header class="topbar">
         <button class="hamburger" id="toggleSidebar">☰</button>
-        <div>
-          <h2 id="pageTitle">Dashboard</h2>
-          <p>ระบบฝึกแปลผล EQA / CAP สำหรับปี 2026</p>
-        </div>
+        <div><h2 id="pageTitle">Dashboard</h2><p>ระบบฝึกแปลผล EQA / CAP สำหรับปี 2026</p></div>
         <button class="secondary-btn" id="logoutBtn">ออกจากระบบ</button>
       </header>
-
-      <section id="loginPage" class="page-card">
-        <h2>เข้าสู่ระบบ</h2>
-        <p class="muted">กรอกรหัสพนักงานเพื่อเข้าใช้งาน</p>
-        <div class="form-grid">
-          <label>รหัสพนักงาน
-            <input id="loginEmpCode" placeholder="เช่น 12345" />
-          </label>
-          <label>ชื่อ-สกุล
-            <input id="loginFullName" placeholder="ใช้กรณีเข้าครั้งแรก" />
-          </label>
-        </div>
-        <button class="primary-btn" id="loginBtn">เข้าสู่ระบบ</button>
-      </section>
-
-      <section id="contentPage" class="content hidden"></section>
+      <section id="contentPage" class="content"></section>
     </main>
   </div>
 
@@ -72,6 +90,7 @@
       </div>
     </div>
   </div>
+
 
   <script>
     window.API_URL = "PASTE_APPS_SCRIPT_WEB_APP_URL_HERE";
