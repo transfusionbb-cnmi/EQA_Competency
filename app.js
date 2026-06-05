@@ -4,7 +4,7 @@ let currentPage = "dashboard";
 let pendingSubmit = null;
 
 const mockCases = [
-  { caseId: "JE14", program: "J/JE1", year: "2026", round: "B", month: "June", status: "OPEN", title: "Dry Challenge - JE-14" },
+  { caseId: "JE14", program: "J/JE2", year: "2026", round: "B", month: "June", status: "OPEN", title: "Dry Challenge - JE-14" },
   { caseId: "DAT-A", program: "DAT", year: "2026", round: "A", month: "February", status: "ANSWER_RELEASED", title: "Direct Antiglobulin Testing - A" }
 ];
 
