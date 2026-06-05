@@ -58,8 +58,10 @@ function bindEvents() {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".login-tab").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      document.getElementById("loginPanel").classList.toggle("hidden", btn.dataset.tab !== "loginPanel");
-      document.getElementById("registerPanel").classList.toggle("hidden", btn.dataset.tab !== "registerPanel");
+      const tab = btn.dataset.loginTab;
+
+      document.getElementById("loginPanel").classList.toggle("hidden", tab !== "login");
+      document.getElementById("registerPanel").classList.toggle("hidden", tab !== "register");
     });
   });
 
@@ -134,13 +136,13 @@ function setLoggedIn(user) {
   currentUser = user;
   document.getElementById("currentUserName").textContent = user.fullName;
   document.getElementById("currentUserRole").textContent = `${user.role} | ${user.email}`;
-  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("loginOverlay").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
   renderPage();
 }
 
 function showLogin() {
-  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("loginOverlay").classList.remove("hidden");
   document.getElementById("app").classList.add("hidden");
 }
 
@@ -449,7 +451,7 @@ function printAnnualReport() {
       <p><strong>Unit:</strong> Blood Bank</p>
       <p><strong>Year:</strong> 2026</p>
       <hr>
-      ${caseTable(mockCases)}
+      ${caseTable(cases2026)}
       <h3>Summary</h3>
       <p>จำนวน Case ตามแผน: 25</p>
       <p>Completed: 0</p>
@@ -500,6 +502,7 @@ async function loadCasesIfNeeded() {
   if (cases2026.length > 0) return;
 
   const result = await api("listCases");
+  console.log("Cases API Result:", result);
 
   if (!result.ok) {
     showInfoModal("โหลด Cases ไม่สำเร็จ", result.message || "ไม่สามารถดึงข้อมูลจาก Cases_2026 ได้", false);
