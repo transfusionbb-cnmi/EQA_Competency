@@ -66,7 +66,7 @@ function bindEvents() {
   });
 
   document.getElementById("loginBtn").addEventListener("click", login);
-  document.getElementById("registerBtn").addEventListener("click", registerFirstTime);
+  document.getElementById("registerBtn").addEventListener("click", function () { alert("ปุ่มทำงานแล้ว"); registerFirstTime(); });
   document.getElementById("logoutBtn").addEventListener("click", logout);
   document.getElementById("toggleSidebar").addEventListener("click", () => {
     document.getElementById("sidebar").classList.toggle("open");
