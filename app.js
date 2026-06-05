@@ -3,10 +3,7 @@ let currentUser = null;
 let currentPage = "dashboard";
 let pendingSubmit = null;
 
-const mockCases = [
-  { caseId: "JE14", program: "J/JE1", year: "2026", round: "B", month: "June", status: "OPEN", title: "Dry Challenge - JE-14" },
-  { caseId: "DAT-A", program: "DAT", year: "2026", round: "A", month: "February", status: "ANSWER_RELEASED", title: "Direct Antiglobulin Testing - A" }
-];
+let cases2026 = [];
 
 const sampleQuestionsJE14 = [
   {
@@ -148,7 +145,8 @@ function showLogin() {
 }
 
 
-function renderPage() {
+async function renderPage() {
+  await loadCasesIfNeeded();
   const titleMap = {
     dashboard: "Dashboard",
     cases: "Cases 2026",
@@ -192,7 +190,7 @@ function renderDashboard() {
 
     <div class="card">
       <h3>Cases ล่าสุด</h3>
-      ${caseTable(mockCases)}
+      ${caseTable(cases2026)}
     </div>
   `;
   setContent(html);
@@ -203,7 +201,7 @@ function renderCases() {
     <div class="card">
       <h3>รายการ Case ปี 2026</h3>
       <p class="muted">เลือก Case เพื่อทำข้อสอบ หรือดูสถานะ</p>
-      ${caseTable(mockCases, true)}
+      ${caseTable(cases2026, true)}
     </div>
   `);
 }
@@ -496,4 +494,26 @@ function showInfoModal(title, message, showCancel=false) {
 function closeModal() {
   document.getElementById("modalBackdrop").classList.add("hidden");
   pendingSubmit = null;
+}
+
+async function loadCasesIfNeeded() {
+  if (cases2026.length > 0) return;
+
+  const result = await api("listCases");
+
+  if (!result.ok) {
+    showInfoModal("โหลด Cases ไม่สำเร็จ", result.message || "ไม่สามารถดึงข้อมูลจาก Cases_2026 ได้", false);
+    cases2026 = [];
+    return;
+  }
+
+  cases2026 = (result.cases || []).map(c => ({
+    caseId: c.CaseId || "",
+    program: c.Program || "",
+    year: c.Year || "",
+    round: c.Round || "",
+    month: c.Month || "",
+    status: c.Status || "",
+    title: c.Title || ""
+  }));
 }
