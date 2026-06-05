@@ -4,7 +4,7 @@ let currentPage = "dashboard";
 let pendingSubmit = null;
 
 const mockCases = [
-  { caseId: "JE14", program: "J/JE2", year: "2026", round: "B", month: "June", status: "OPEN", title: "Dry Challenge - JE-14" },
+  { caseId: "JE14", program: "J/JE1", year: "2026", round: "B", month: "June", status: "OPEN", title: "Dry Challenge - JE-14" },
   { caseId: "DAT-A", program: "DAT", year: "2026", round: "A", month: "February", status: "ANSWER_RELEASED", title: "Direct Antiglobulin Testing - A" }
 ];
 
@@ -53,11 +53,21 @@ const sampleQuestionsJE14 = [
 
 document.addEventListener("DOMContentLoaded", () => {
   bindEvents();
-  renderLogin();
+  showLogin();
 });
 
 function bindEvents() {
+  document.querySelectorAll(".login-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".login-tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("loginPanel").classList.toggle("hidden", btn.dataset.tab !== "loginPanel");
+      document.getElementById("registerPanel").classList.toggle("hidden", btn.dataset.tab !== "registerPanel");
+    });
+  });
+
   document.getElementById("loginBtn").addEventListener("click", login);
+  document.getElementById("registerBtn").addEventListener("click", registerFirstTime);
   document.getElementById("logoutBtn").addEventListener("click", logout);
   document.getElementById("toggleSidebar").addEventListener("click", () => {
     document.getElementById("sidebar").classList.toggle("open");
@@ -80,39 +90,63 @@ function bindEvents() {
   });
 }
 
-function login() {
-  const empCode = document.getElementById("loginEmpCode").value.trim();
-  const fullName = document.getElementById("loginFullName").value.trim();
+function validMahidolEmail(email) {
+  return String(email || "").trim().toLowerCase().endsWith("@mahidol.ac.th");
+}
 
-  if (!empCode) {
-    showInfoModal("กรุณากรอกรหัสพนักงาน", "ต้องมีรหัสพนักงานก่อนเข้าสู่ระบบ", false);
-    return;
+async function api(action, payload = {}) {
+  if (!API_URL || API_URL.includes("PASTE_APPS_SCRIPT")) {
+    if (action === "register") return { ok:true, user:{ email:payload.email, empCode:payload.empCode, fullName:payload.fullName, role:"staff" } };
+    if (action === "loginWithPassword") return { ok:true, user:{ email:payload.email, empCode:"demo", fullName:"Demo User", role:"staff" } };
+    return { ok:true };
   }
+  const res = await fetch(API_URL, { method:"POST", body: JSON.stringify({ action, ...payload }) });
+  return await res.json();
+}
 
-  currentUser = {
-    empCode,
-    fullName: fullName || `Employee ${empCode}`,
-    role: empCode === "admin" ? "admin" : empCode === "qm" ? "qm" : empCode === "md" ? "physician" : "staff"
-  };
+async function registerFirstTime() {
+  const email = document.getElementById("regEmail").value.trim().toLowerCase();
+  const fullName = document.getElementById("regFullName").value.trim();
+  const empCode = document.getElementById("regEmpCode").value.trim();
+  const password = document.getElementById("regPassword").value;
+  const password2 = document.getElementById("regPassword2").value;
 
-  document.getElementById("currentUserName").textContent = currentUser.fullName;
-  document.getElementById("currentUserRole").textContent = currentUser.role;
+  if (!validMahidolEmail(email)) return showInfoModal("อีเมลไม่ถูกต้อง", "ใช้ได้เฉพาะอีเมลที่ลงท้ายด้วย @mahidol.ac.th", false);
+  if (!fullName || !empCode) return showInfoModal("ข้อมูลไม่ครบ", "กรุณากรอกชื่อ-สกุล และรหัสพนักงาน", false);
+  if (password.length < 6) return showInfoModal("รหัสผ่านสั้นเกินไป", "รหัสผ่านควรมีอย่างน้อย 6 ตัวอักษร", false);
+  if (password !== password2) return showInfoModal("รหัสผ่านไม่ตรงกัน", "กรุณาตรวจสอบรหัสผ่านอีกครั้ง", false);
+
+  const result = await api("register", { email, fullName, empCode, password });
+  if (!result.ok) return showInfoModal("สมัครไม่สำเร็จ", result.message || "เกิดข้อผิดพลาด", false);
+  setLoggedIn(result.user);
+}
+
+async function login() {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value;
+
+  if (!validMahidolEmail(email)) return showInfoModal("อีเมลไม่ถูกต้อง", "ใช้ได้เฉพาะอีเมลที่ลงท้ายด้วย @mahidol.ac.th", false);
+  if (!password) return showInfoModal("กรุณากรอกรหัสผ่าน", "ต้องกรอกรหัสผ่านก่อนเข้าสู่ระบบ", false);
+
+  const result = await api("loginWithPassword", { email, password });
+  if (!result.ok) return showInfoModal("เข้าสู่ระบบไม่สำเร็จ", result.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง", false);
+  setLoggedIn(result.user);
+}
+
+function setLoggedIn(user) {
+  currentUser = user;
+  document.getElementById("currentUserName").textContent = user.fullName;
+  document.getElementById("currentUserRole").textContent = `${user.role} | ${user.email}`;
   document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("contentPage").classList.remove("hidden");
+  document.getElementById("app").classList.remove("hidden");
   renderPage();
 }
 
-function logout() {
-  currentUser = null;
+function showLogin() {
   document.getElementById("loginPage").classList.remove("hidden");
-  document.getElementById("contentPage").classList.add("hidden");
-  document.getElementById("currentUserName").textContent = "ยังไม่ได้เข้าสู่ระบบ";
-  document.getElementById("currentUserRole").textContent = "-";
+  document.getElementById("app").classList.add("hidden");
 }
 
-function renderLogin() {
-  document.getElementById("contentPage").classList.add("hidden");
-}
 
 function renderPage() {
   const titleMap = {
